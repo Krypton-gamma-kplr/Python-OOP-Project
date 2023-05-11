@@ -1,10 +1,9 @@
 # Import des modules nécessaires
 import json
 from unidecode import unidecode
-import re
-
+import os
 # Charger des données JSON à partir du fichier dans un dictionnaire python
-local_path = os.path.dirname(os.path.abspath(__file__))
+local_path = os.path.dirname(os.path.abspath("/workspaces/Python-OOP-Project/exercices/03.class_tree/json_data.json"))
 json_data = json.load(open(os.path.join(local_path, 'json_data.json'), "rb"))
 
 # Reconvertir le dictionnaire en chaine de caractere pour le traiter ensuite
@@ -16,7 +15,57 @@ json_data = (unidecode(json_str))
 # Conversion de la chaine de caractere JSON à nouveau en dictionnaire Python
 # Le dictionnaire python est plus pratique à manipuler que la chaine de caractère car il est structuré
 json_dict = json.loads(json_data)
+#for class_na,v in json_dict.items():
+ #   print(class_na,'/n', v)
+#print(json.dumps(json_dict, indent=4))
 
+def generate_class_def(nom_classe: str, attributs: dict, nom_superclasse: str, args_superclasse: list = []) -> str:
+    # Cette fonction génère une définition de classe Python à partir des paramètres passés et retourne une chaîne de caractères représentant la définition de classe générée.
+    
+    # Initialisation des variables
+   
+    args_constructeur = [] # une liste qui stocke les noms des attributs qui seront utilisés pour créer le constructeur
+    definition_constructeur = "" # une chaîne de caractères qui stocke le code qui sera utilisé pour initialiser les attributs de la classe
+    has_attributs = False # un booléen qui vérifie si la classe a des attributs ou non
+    modele_classe = f"class {nom_classe}" # une chaîne de caractères qui stocke la définition de base de la classe
+
+    # Gestion de la superclasse
+    if nom_superclasse: # si la classe a une superclasse
+        modele_classe += f"({nom_superclasse})" # ajouter la superclasse à la définition de la classe
+
+    modele_classe += ":\n" # ajouter une nouvelle ligne à la définition de la classe
+    
+    # Gestion des attributs
+    for nom_attribut in attributs.keys(): # pour chaque attribut dans le dictionnaire d'attributs
+        if nom_attribut != "subclasses": # si l'attribut n'est pas une sous-classe
+            has_attributs = True # la classe a des attributs
+            args_constructeur.append(nom_attribut) # ajouter le nom de l'attribut à la liste des arguments du constructeur
+            definition_constructeur += f"\n\t\tself.{nom_attribut} = {nom_attribut}" # ajouter une ligne au code de définition du constructeur pour initialiser l'attribut
+
+   
+    # Gestion du nom de la classe si c'est une classe Product
+    if nom_classe == "Product": # si la classe est de type Product
+        definition_constructeur += "\n\t\tself.name=type(self).__name__" # ajouter une ligne au code de définition du constructeur pour initialiser le nom de la classe
+
+    # Gestion du constructeur
+    if has_attributs: # la classe a des attributs
+        modele_constructeur = f"\tdef __init__(self, {', '.join(args_constructeur + args_superclasse)}):" # créer la signature du constructeur en incluant les arguments des attributs et les arguments de la superclasse
+
+        if len(args_superclasse) > 0: # si la superclasse a des arguments
+            modele_constructeur += f"\n\t\tsuper().__init__({', '.join(args_superclasse)})" # ajouter une ligne pour initialiser la superclasse
+
+        modele_constructeur += definition_constructeur # ajouter le code d'initialisation des attributs à la définition du constructeur
+   
+    else: # la classe n'a pas d'attributs
+        if len(args_superclasse) > 0: # si la superclasse a des arguments
+            modele_constructeur = f"\tdef __init__(self, {', '.join(args_superclasse)}):" # créer la signature du constructeur en incluant les arguments de la superclasse
+            modele_constructeur += f"\n\t\tsuper().__init__({', '.join(args_superclasse)})"
+      
+        else:    
+            modele_constructeur = "\tpass"
+    
+ 
+    return modele_classe + modele_constructeur + "\n\n"
 """
 La méthode generate_class_hierarchy permet de générer une hiérarchie des classes en utilisant un dictionnaire comme entrée.
 Elle prend les arguments suivant: 
@@ -27,6 +76,32 @@ Elle prend les arguments suivant:
 def generate_class_hierarchy(json_dict :dict, superclass_name:str=None,superclass_args:list=[]):
     # Initialisation de la chaîne de caractères contenant les définitions de classes
     class_defs = ""
+    poulet='Product'
+    gandalf= poulet.keys()
+    for class_name,class_attrs in json_dict.items():
+
+        class_def = generate_class_def(class_name, class_attrs ,f'{poulet}' , gandalf )
+        class_defs += class_def
+        
+
+        #if isinstance(class_name,dict):
+        if "subclasses" in class_attrs:
+            super_attr = class_attrs + superclass_args 
+            super_attr.remove('subclasses')
+            poulet=class_name
+            gandalf=super_attr
+
+
+            generate_class_hierarchy(json_dict, class_name, super_attr)
+        
+
+    return class_defs
+
+
+print(generate_class_hierarchy(json_dict,'Product',json_dict.keys()))
+
+
+
 
     """ 
     Itération sur les éléments du dictionnaire
