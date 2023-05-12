@@ -87,7 +87,9 @@ def generate_class_hierarchy(json_dict :dict, superclass_name:str=None,superclas
         if "subclasses" in class_attrs:
             super_attr = list(class_attrs.keys()) + superclass_args 
             super_attr.remove('subclasses')
-            generate_class_hierarchy(class_attrs["subclasses"], class_name, super_attr)
+            subclasses = generate_class_hierarchy(class_attrs["subclasses"], class_name, super_attr)
+            class_defs += subclasses
+
            
         
 
