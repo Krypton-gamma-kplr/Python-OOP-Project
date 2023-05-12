@@ -4,11 +4,16 @@
 class InventoryProductEntry:
     # Initialisation de la classe, en prenant en argument un objet Product et une quantité initiale
     def __init__(self, product:Product, quantity):
+        
+        self.product = product
+        self.quantity = quantity
         """
         'product' : un objet de type produit qui rassemble les différents attributs et caractéristiques de ce dernier
         'quantity' : un entier qui représente le nombre des pièces du produit en question
         """
         # Initialisation des variables
+        self.sales = 0
+        self.expenses = 0
         """
         Vous devez initialiser deux variables. 
         la variable 'sales' qui stocke le total des revenues des ventes du produit
@@ -17,6 +22,7 @@ class InventoryProductEntry:
         """
 
     #Méthode Sell
+
     """
     La méthode sell est utilisée pour retirer la quantité vendue du produit depuis le stock.
     Elle met également à jour les ventes totales pour le produit.
@@ -36,6 +42,13 @@ class InventoryProductEntry:
             Retourner Vrai
         
         """
+        if quantity < quantité_demandé :
+            print("Le stock du produit ",product.name," est insuffisant.")
+            return False
+        else :
+            quantity -= quantité_demandé
+            self.sales += product.price * quantité_demandé 
+            return True
     
     #Méthode Restock
     """
@@ -47,6 +60,8 @@ class InventoryProductEntry:
         Ajouter la quantité reçue à la quantité en stock
         Ajouter le coût total de la nouvelle quantité reçue  à la variable 'expenses' en multipliant la quantité reçue par le coût du produit
         """
+        quantity += restock_q
+        self.expenses += restock_q * product.price 
 
     #Méthode repr
     """
@@ -56,3 +71,5 @@ class InventoryProductEntry:
     """
     def __repr__(self):
         # Retourner une chaîne de caractères formatée contenant le nom du produit, la marque, la quantité en stock et le prix du produit.
+        return f'{product.name} {product.marque} {quantity} {product.price}'
+    

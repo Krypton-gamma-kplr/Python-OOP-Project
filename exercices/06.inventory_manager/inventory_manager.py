@@ -18,7 +18,12 @@ class InventoryManager:
             si 'inventory_product_entry_key' est égal à product.name alors:
                 retourner True
         retourner False
+        
         """
+        for inventory_product_entry_key in self.inventory:
+            if inventory_product_entry_key == product.name:
+                return True
+        return False
     
     #Méthode add_product
     """
@@ -32,7 +37,14 @@ class InventoryManager:
         Sinon:
             Créer un nouvel objet InventoryProductEntry en utilisant le produit et la quantité fournis
             Ajouter le nouvel objet au dictionnaire 'inventory'
+        
         """
+        if product in inventory :
+            print("product already exist")
+        else : 
+            new_product = InventoryProductEntry(product,quantity)
+            inventory[product.name] = new_product
+        
     
     #Méthode remove_product
     """
@@ -43,6 +55,11 @@ class InventoryManager:
         #Utiliser la méthode product_exists pour vérifier si le produit existe dans l'inventaire
         #Si le produit est trouvé, supprimer le de l'inventaire
         #Sinon, afficher un message d'erreur indiquant que le produit n'a pas été trouvé
+        if product_exists(product_name) :
+            del self.inventory[product_name] 
+        else : 
+            print("404 error product not found")
+
     
     #Méthode sell_product
     """
@@ -55,7 +72,13 @@ class InventoryManager:
         #Pour chaque itération, on vérifie si le nom du produit fourni est équal à la clé du dictionnaire.
         #Si le produit est trouvé, appeler la méthode 'sell' de l'objet InventoryProductEntry correspondant avec la quantité à vendre
         #Sinon, afficher un message d'erreur indiquant que la vente a échoué
-    
+        #for inventory_product_entry_key in self.inventory :
+        if product_exists(product_name) : 
+            IPE=self.inventory[product_name]
+            IPE.sell(quantity)
+        else :
+            print("erreur la vente a échoué")
+
     #Méthode restock_product
     """
     La méthode restock_product est utilisée pour restocker une quantité donnée d'un produit.
@@ -66,8 +89,16 @@ class InventoryManager:
         #Si le produit est trouvé, appeler la méthode 'restock' de l'objet InventoryProductEntry correspondant avec la quantité à restocker
         #Si le réapprovisionnement est réussi, afficher un message de confirmation
         #Sinon, on appelle la méthode add_product pour ajouter le produit en stock avec une quantité nulle et on rappelle la fonction restock_product pour le restocker
-    
-    
+        if product_exists(product_name) :
+            IPE =self.inventory[product_name]
+            IPE.restock(quantity)
+            print("réaprovisionnement réussi")
+        else:
+            self.add_product(product_name,0)
+            IPE =self.inventory[product_name]
+            IPE.restock(quantity)
+
+
     #Méthode get_product
     """
     La méthode get_product retourne toutes les informations liées au produit en faisant une recherche par son nom.
@@ -80,6 +111,10 @@ class InventoryManager:
                 retourner self.inventaire[inventory_product_entry_key].product
         afficher un message pour indiquer que le produit n'existe pas
         """
+        if product_exists(name): 
+            return self.inventory[name].product
+        else : 
+            print("le produit n'existe pas")
 
     #Méthode list_products
     """
@@ -92,3 +127,7 @@ class InventoryManager:
             afficher la valeur correspondante à cette clé
         retourner le dictionnaire inventaire
         """
+        for inventory_product_entry_key in self.inventory :
+            print(self.inventory[inventory_product_entry_key])
+        return self.inventory
+        
