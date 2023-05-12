@@ -90,14 +90,10 @@ def generate_class_hierarchy(json_dict :dict, superclass_name:str=None,superclas
             subclasses = generate_class_hierarchy(class_attrs["subclasses"], class_name, super_attr)
             class_defs += subclasses
 
-           
-        
-
     return class_defs
 
-
-print(generate_class_hierarchy(json_dict))
-
+content = generate_class_hierarchy(json_dict)
+print(content)
 
 
 
@@ -136,6 +132,9 @@ Après avoir terminé d'écrire dans le fichier, la méthode se termine et le fi
 def write_content(content,filename):
         with open(filename, "w", encoding='utf-8') as f:
             f.write(content)
+
+
+write_content(content,"product_classes.py")
 
 # Appeler la méthode generate_class_hierarchy pour générer le code des classes automatiquement en se basant sur le dictionnaire json_dict
 # Stocker le résultat de la classe dans une variable
