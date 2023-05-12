@@ -76,34 +76,30 @@ Elle prend les arguments suivant:
 def generate_class_hierarchy(json_dict :dict, superclass_name:str=None,superclass_args:list=[]):
     # Initialisation de la chaîne de caractères contenant les définitions de classes
     class_defs = ""
-    poulet='Product'
-    gandalf= poulet.keys()
+    
     for class_name,class_attrs in json_dict.items():
 
-        class_def = generate_class_def(class_name, class_attrs ,f'{poulet}' , gandalf )
+        class_def = generate_class_def(class_name, class_attrs ,superclass_name , superclass_args )
         class_defs += class_def
         
 
         #if isinstance(class_name,dict):
         if "subclasses" in class_attrs:
-            super_attr = class_attrs + superclass_args 
+            super_attr = list(class_attrs.keys()) + superclass_args 
             super_attr.remove('subclasses')
-            poulet=class_name
-            gandalf=super_attr
-
-
-            generate_class_hierarchy(json_dict, class_name, super_attr)
+            generate_class_hierarchy(class_attrs["subclasses"], class_name, super_attr)
+           
         
 
     return class_defs
 
 
-print(generate_class_hierarchy(json_dict,'Product',json_dict.keys()))
+print(generate_class_hierarchy(json_dict))
 
 
 
 
-    """ 
+""" 
     Itération sur les éléments du dictionnaire
     pour chaque nom de classe (class_name) et attribut de cette dernière (class_attrs) dans les éléments de  json_dict, faire:
 
@@ -122,8 +118,7 @@ print(generate_class_hierarchy(json_dict,'Product',json_dict.keys()))
 
     
     Retourne la chaîne de caractères contenant les définitions de classes
-    
-    """
+"""
    
  
 # la méthode write_content va nous permet d'écrire le code généré automatiquement des classes dans un fichier Python séparé
